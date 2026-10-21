@@ -2,7 +2,7 @@
 
 | No. | Name | Role | Responsibilities |
 | --- | --- | --- | --- |
-| 1 | Shubham Awasthi| Team Lead | Overall Stakeholders and Project management and backend development |
+| 1 | Shubham Awasthi| Team Lead | Overall Stakeholders and Project management and overall development support and guidance |
 | 2 | Member 2 | | |
 | 3 | Member 3 | | |
 | 4 | Member 4 | | |
