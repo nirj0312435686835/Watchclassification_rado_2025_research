@@ -1,17 +1,80 @@
 import { Link, useParams } from "react-router-dom";
-import { teamMembers } from "../../data/teamMembers";
+import NotFoundPage from "../../components/NotFoundPage";
+import { getMemberBySlug } from "../../data/team";
+import MemberAvatar from "./MemberAvatar";
+import { roleBg } from "./roleColors";
+
+const box = "rounded-2xl border border-line bg-white p-5 sm:p-6";
+const contact =
+    "rounded-full border-[1.5px] border-card-border bg-white px-3.5 py-2 text-sm font-semibold text-contact-ink hover:bg-skill";
 
 export default function TeamMemberPage() {
-  const { slug } = useParams();
-  const member = teamMembers.find((person) => person.slug === slug);
-  if (!member) return <main className="container page"><h1>Team member not found</h1><Link className="button" to="/">Meet the team</Link></main>;
-  return <main className="container page profile-page"><Link className="text-link" to="/">← Back to team</Link>
-    <article className="profile-card">
-      {member.image ? <img className="profile-avatar" src={member.image} alt={member.name}/> :
-        <span className="profile-avatar avatar-initials" aria-hidden="true">{member.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}</span>}
-      <p className="eyebrow">TEAM MEMBER</p><h1>{member.name}</h1><p className="profile-role">{member.role}</p>
-      <p>{member.bio}</p><p className="member-github">GitHub: @{member.github}</p>
-      <p className="profile-note">Profile data is maintained in <code>src/data/teamMembers.ts</code>.</p>
-    </article>
-  </main>;
+    const { slug } = useParams();
+    const member = slug ? getMemberBySlug(slug) : undefined;
+
+    if (!member) {
+        return <NotFoundPage />;
+    }
+
+    return (
+        <article className="mx-auto max-w-3xl">
+            <Link to="/about" className="mb-5 inline-block font-semibold text-link hover:underline">
+                ← Team 2 - About Us
+            </Link>
+
+            <header className={`${box} flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-7 sm:text-left`}>
+                <MemberAvatar member={member} className="size-32 text-4xl" />
+                <div>
+                    <h1 className="mb-2 text-3xl font-bold">{member.name}</h1>
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold text-white ${roleBg[member.roleType]}`}>
+            {member.role}
+          </span>
+                    <p className="mt-2.5 font-mono text-xs text-muted">@{member.github}</p>
+                </div>
+            </header>
+
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {member.about && (
+                    <section className={box}>
+                        <h2 className="mb-2 font-bold">About me</h2>
+                        <p className="leading-relaxed text-muted">{member.about}</p>
+                    </section>
+                )}
+
+                <section className={box}>
+                    <h2 className="mb-2 font-bold">My role in the project</h2>
+                    <p className="leading-relaxed text-muted">{member.projectRole ?? member.roleSummary}</p>
+                </section>
+
+                {member.skills && member.skills.length > 0 && (
+                    <section className={box}>
+                        <h2 className="mb-2 font-bold">Skills</h2>
+                        <ul className="flex flex-wrap gap-1.5">
+                            {member.skills.map((skill) => (
+                                <li key={skill} className="rounded-lg bg-skill px-2.5 py-1 text-sm">
+                                    {skill}
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
+
+                <section className={box}>
+                    <h2 className="mb-2 font-bold">Contacts</h2>
+                    <div className="flex flex-wrap gap-2.5">
+                        <a href={`https://github.com/${member.github}`} target="_blank" rel="noreferrer" className={contact}>
+                            GitHub
+                        </a>
+                        {member.linkedin && (
+                            <a href={member.linkedin} target="_blank" rel="noreferrer" className={contact}>
+                                LinkedIn
+                            </a>
+                        )}
+                    </div>
+
+                    {member.email && <p className="mt-3 text-sm text-muted wrap-anywhere">{member.email}</p>}
+                </section>
+            </div>
+        </article>
+    );
 }
